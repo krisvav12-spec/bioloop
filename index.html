@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#10271f" />
+  <title>BioLoop — Waste-to-Energy Decision Lab</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="BioLoop home">
+        <span class="brand-mark">↻</span>
+        <span><strong>BioLoop</strong><small>WASTE-TO-VALUE LAB</small></span>
+      </a>
+      <div class="topbar-right"><span class="live-dot"></span> OFFLINE-READY SIMULATOR <span class="event-tag">BIOVALOR '26</span></div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">BIOPROCESS DECISION SUPPORT</p>
+          <h1>Make waste work<br /><em>for you.</em></h1>
+          <p class="hero-text">Explore the potential of biological waste before investing in a digester. Model methane, usable energy, economics, and uncertainty in one place.</p>
+          <div class="hero-chips"><span>01 / Model</span><span>02 / Compare</span><span>03 / Decide</span></div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="planet"><span>CH₄</span><small>METHANE</small></div>
+          <span class="float-leaf leaf-one">✳</span><span class="float-leaf leaf-two">✦</span>
+          <div class="art-caption"><span class="art-line"></span><span>FROM ORGANICS<br />TO OPPORTUNITY</span></div>
+        </div>
+      </section>
+
+      <section class="section-heading">
+        <div><p class="eyebrow">SIMULATION WORKSPACE</p><h2>Build your scenario</h2></div>
+        <button id="resetBtn" class="button button-quiet" type="button">↺ Reset assumptions</button>
+      </section>
+
+      <div class="workspace">
+        <section class="panel input-panel" aria-labelledby="inputs-title">
+          <div class="panel-title"><span class="step-number">01</span><div><h3 id="inputs-title">Feedstock & process</h3><p>Change the assumptions to model a batch.</p></div></div>
+          <label class="field-label" for="feedstock">Feedstock type <span class="info-dot" title="Preset COD values are illustrative starting assumptions, not laboratory measurements.">i</span></label>
+          <select id="feedstock" class="control">
+            <option value="food">Mixed canteen food waste</option>
+            <option value="manure">Cattle manure / dung</option>
+            <option value="crop">Crop residues (pretreated)</option>
+            <option value="custom">Custom feedstock</option>
+          </select>
+
+          <div class="field-row">
+            <div class="field-group"><label class="field-label" for="wasteKg">Wet waste input</label><div class="input-unit"><input id="wasteKg" class="control" type="number" min="0" max="1000000" step="10" value="500" /><span>kg/day</span></div></div>
+            <div class="field-group"><label class="field-label" for="codLoad">COD loading</label><div class="input-unit"><input id="codLoad" class="control" type="number" min="0" max="2" step="0.01" value="0.15" /><span>kg/kg wet</span></div></div>
+          </div>
+          <p class="helper">COD loading presets are illustrative. Replace them with measured or source-supported feedstock data for a real design.</p>
+
+          <div class="slider-field"><div class="slider-heading"><label class="field-label" for="codRemoval">COD removal</label><strong id="codRemovalValue">70%</strong></div><input id="codRemoval" type="range" min="10" max="95" step="1" value="70" /><div class="range-labels"><span>10% · Low</span><span>95% · High</span></div></div>
+          <div class="slider-field"><div class="slider-heading"><label class="field-label" for="recovery">Methane recovery factor</label><strong id="recoveryValue">85%</strong></div><input id="recovery" type="range" min="40" max="100" step="1" value="85" /><div class="range-labels"><span>40% · Conservative</span><span>100% · Ideal limit</span></div></div>
+          <div class="slider-field"><div class="slider-heading"><label class="field-label" for="methaneShare">Methane share in biogas</label><strong id="methaneShareValue">60%</strong></div><input id="methaneShare" type="range" min="45" max="75" step="1" value="60" /><div class="range-labels"><span>45%</span><span>75%</span></div></div>
+          <div class="field-row compact-row">
+            <div class="field-group"><label class="field-label" for="efficiency">Electrical efficiency</label><div class="input-unit"><input id="efficiency" class="control" type="number" min="0" max="0.6" step="0.01" value="0.35" /><span>fraction</span></div></div>
+            <div class="field-group"><label class="field-label" for="parasitic">Plant energy use</label><div class="input-unit"><input id="parasitic" class="control" type="number" min="0" max="0.8" step="0.01" value="0.10" /><span>fraction</span></div></div>
+          </div>
+          <div class="model-note"><span class="note-icon">ⓘ</span><p><strong>Model boundary</strong><br />Uses a COD-based theoretical methane relationship with editable recovery assumptions. It does not model digester kinetics, retention time, inhibition, gas leakage, or actual plant performance.</p></div>
+        </section>
+
+        <section class="results-column" aria-label="Simulation results">
+          <div class="result-banner"><div><p class="eyebrow">ESTIMATED DAILY OUTPUT</p><h3>Your scenario snapshot</h3></div><span class="estimate-badge"><span class="live-dot"></span> SIMULATED</span></div>
+          <div class="metric-grid">
+            <article class="metric-card metric-primary"><div class="metric-top"><span>Methane produced</span><span class="metric-icon">CH₄</span></div><div class="metric-value" id="methaneOut">— <small>m³/day</small></div><p>Estimated methane volume</p><div class="metric-bottom"><span>COD-based estimate</span><span>↗</span></div></article>
+            <article class="metric-card"><div class="metric-top"><span>Total biogas</span><span class="metric-icon">◉</span></div><div class="metric-value" id="biogasOut">— <small>m³/day</small></div><p>Includes non-methane gases</p><div class="mini-track"><span id="gasTrack"></span></div></article>
+            <article class="metric-card"><div class="metric-top"><span>Gross energy</span><span class="metric-icon">ϟ</span></div><div class="metric-value" id="grossEnergyOut">— <small>kWh/day</small></div><p>Methane energy before conversion losses</p></article>
+            <article class="metric-card"><div class="metric-top"><span>Net electricity</span><span class="metric-icon">⚡</span></div><div class="metric-value" id="netElectricityOut">— <small>kWh/day</small></div><p>After conversion and plant energy use</p></article>
+          </div>
+
+          <section class="panel economics-panel">
+            <div class="panel-title"><span class="step-number">02</span><div><h3>Is it worth exploring?</h3><p>Indicative daily economics — edit local assumptions.</p></div></div>
+            <div class="field-row economics-inputs">
+              <div class="field-group"><label class="field-label" for="electricityRate">Electricity value</label><div class="input-unit"><span>₹</span><input id="electricityRate" class="control" type="number" min="0" max="1000" step="0.5" value="8" /><span>/kWh</span></div></div>
+              <div class="field-group"><label class="field-label" for="operatingCost">Operating cost</label><div class="input-unit"><span>₹</span><input id="operatingCost" class="control" type="number" min="0" max="100000000" step="100" value="1200" /><span>/day</span></div></div>
+            </div>
+            <div class="economics-summary"><div><span class="summary-label">Estimated electricity value / day</span><strong id="revenueOut">₹—</strong></div><div><span class="summary-label">Indicative net / day</span><strong id="netOut" class="net-value">₹—</strong></div><div><span class="summary-label">Simple break-even note</span><strong id="decisionOut" class="decision-text">—</strong></div></div>
+            <p class="helper">This is a screening estimate, not a profit guarantee. It excludes capital cost, financing, maintenance variability, digestate handling, gas upgrading, and downtime.</p>
+          </section>
+
+          <section class="panel compare-panel">
+            <div class="panel-title"><span class="step-number">03</span><div><h3>Compare recovery scenarios</h3><p>Same waste input, different methane recovery assumptions.</p></div></div>
+            <div class="scenario-list" id="scenarioList" aria-live="polite"></div>
+            <div class="uncertainty-box"><div class="uncertainty-symbol">≈</div><div><strong>Don't trust a single number.</strong><p>The low / central / high scenarios are sensitivity cases, not a statistical confidence interval. Measure feedstock COD and run pilot tests before sizing equipment.</p></div></div>
+          </section>
+        </section>
+      </div>
+
+      <section class="process-section">
+        <div class="section-heading"><div><p class="eyebrow">THE BIOPROCESS</p><h2>From waste to value</h2></div><p class="section-subtitle">A simplified process pathway for the concept.</p></div>
+        <div class="process-flow">
+          <article class="process-step"><span class="process-index">01</span><div class="process-illustration">♧</div><h3>Collect & prepare</h3><p>Sort contaminants, size-reduce feedstock, and characterize the organic load.</p></article>
+          <div class="flow-arrow">→</div>
+          <article class="process-step"><span class="process-index">02</span><div class="process-illustration">◉</div><h3>Anaerobic digestion</h3><p>Microorganisms break down biodegradable material without oxygen.</p></article>
+          <div class="flow-arrow">→</div>
+          <article class="process-step"><span class="process-index">03</span><div class="process-illustration">ϟ</div><h3>Capture biogas</h3><p>Collect gas safely; characterize methane content and remove contaminants as needed.</p></article>
+          <div class="flow-arrow">→</div>
+          <article class="process-step"><span class="process-index">04</span><div class="process-illustration">♧</div><h3>Manage digestate</h3><p>Test and treat digestate before any proposed agricultural use.</p></article>
+        </div>
+      </section>
+
+      <section class="bottom-note"><span class="bottom-note-icon">✳</span><div><strong>Prototype disclaimer</strong><p>BioLoop is an educational decision-support simulation. Outputs depend on user-entered assumptions and are not engineering guarantees. Safe, compliant digester design and digestate use require qualified review and appropriate testing.</p></div><span class="version">BUILD 0.1 / BIOVALOR '26</span></section>
+    </main>
+    <footer><span>BioLoop · Waste to Wealth</span><span>Discover. Convert. Validate.</span></footer>
+  </div>
+</body>
+</html>
